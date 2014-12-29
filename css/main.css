@@ -1,0 +1,11 @@
+#watch {
+    z-index: 0;
+    position: relative;
+    background: #ffffff;
+    border: 3px solid #000000;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    background: #eeeeee;
+    overflow: hidden;
+}

@@ -1,0 +1,309 @@
+<html>
+<head>
+    <title>Watch Face Editor</title>
+
+    <!-- https://github.com/jdorn/json-editor -->
+    <script src="js/jsoneditor.js"></script>
+
+    <script src="js/jquery-1.11.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap3-typeahead.min.js"></script>
+    <script src="js/jszip.min.js"></script>
+    <script src="js/jszip-utils.min.js"></script>
+    <script src="js/filereader.js"></script>
+    <script src="js/jquery.xml2json.js"></script>
+
+    <script src="js/json2xml.js"></script>
+    <script src="js/FileSaver.min.js"></script>
+
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+
+    <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body id="body">
+    <div class="container">
+        <div class="row">
+            <h1>Watch Face Editor</h1>
+            <div class="col-md-7">
+                <div id='editor_holder'></div>
+            </div>
+
+            <div class="col-md-5">
+                <span id="valid_indicator" class="alert"></span>
+                <br/><br/><br/>
+                <br/>
+                <form id="file-form" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="extra-data" multiple="">
+                    <input type="file" id="file-input" name="file-input" multiple="">
+                </form>
+                <div id="dropzone" style="width: 150px; height: 30px; border: 1px #000000 dashed"></div>
+                <br/>
+                <button class="btn btn-success" id="download">Download</button>
+                <br/><br/>
+                <div id="watch"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentWatchFile;
+        var currentFileName;
+
+        var faceHeight = 520;
+        var faceWidth = 520;
+
+        var scale = 100;
+
+        var editor;
+
+        var selectedType;
+
+        var options = {
+            dragClass: "drag",
+            accept: false,
+            readAsMap: {},
+            readAsDefault: 'ArrayBuffer',
+            on: {
+                beforestart: function (e, file) {
+                    // return false if you want to skip this file
+                },
+                loadstart: function (e, file) { /* Native ProgressEvent */
+                },
+                progress: function (e, file) { /* Native ProgressEvent */
+                },
+                load: function (e, file) {
+                    // file loaded
+                    try {
+                        // unzip file
+                        currentWatchFile = new JSZip(e.target.result);
+                        currentFileName = file.name;
+
+                    } catch (e) {
+                        alert('unable to unzip file, is it a .watch or .face file? Is the zip protected?');
+                    }
+
+                    var json;
+                    if (currentWatchFile.file("watch.xml")) {
+                        // watchmaker
+                        selectedType = 'watchmaker';
+                        // convert watchmaker faces to json
+                        json = $.xml2json(currentWatchFile.file("watch.xml").asText());
+
+                    } else if (currentWatchFile.file("watchface.json")) {
+                        // facer
+                        selectedType = 'facer';
+                        json = JSON.parse(currentWatchFile.file("watchface.json").asText());
+
+                    } else {
+                        // draw empty face, error?
+                    }
+
+                    // load editor
+                    //loadEditor(json);
+
+                    // draw watch face
+                    drawWatch(json, selectedType);
+
+                },
+                error: function (e, file) { /* Native ProgressEvent */
+                },
+                loadend: function (e, file) { /* Native ProgressEvent */
+                },
+                abort: function (e, file) { /* Native ProgressEvent */
+                },
+                skip: function (e, file) {
+                    // Called when a file is skipped.  This happens when:
+                    //  1) A file doesn't match the accept option
+                    //  2) false is returned in the beforestart callback
+                },
+                groupstart: function (group) {
+                    // Called when a 'group' (a single drop / copy / select that may
+                    // contain multiple files) is receieved.
+                    // You can ignore this event if you don't care about groups
+                },
+                groupend: function (group) {
+                    // Called when a 'group' is finished.
+                    // You can ignore this event if you don't care about groups
+                }
+            }
+        };
+
+        // init
+        $(document).ready(function() {
+            $("#file-input, #dropzone").fileReaderJS(options);
+            $('#watch').css('width', faceWidth + 'px').css('height', faceHeight + 'px');
+            $("#download").click(function() {
+                packageZip();
+            });
+        });
+
+        function drawWatch(watch, type) {
+
+            // TODO: cleanup, find a better way to display watch face
+
+            $('#watch').html('');
+            if (type == 'watchmaker') {
+                $.each(watch.Layer, function (key, lyr) {
+                    //console.log(lyr);
+                    var tag;
+                    if (lyr.type == 'image') {
+                        tag = $(genImageTag(lyr));
+                    }
+                    $('#watch').append(tag);
+                    if (tag) {
+                        tag.attr('style', 'z-index:1' + key + '0; width:' + lyr.width + "px; height:" + lyr.height + "px ;position:absolute; top:" +
+                        (((faceHeight / 2) - (parseInt(lyr.height) / 2)) + parseInt(lyr.y)) +
+                        "px; left:" + (((faceWidth / 2) - (parseInt(lyr.width) / 2)) + parseInt(lyr.x)) + "px;");
+                    }
+                });
+            } else if (type == 'facer') {
+
+                $.each(watch, function (key, lyr) {
+                    console.log(lyr);
+                    var tag;
+                    if (lyr.type == 'image') {
+                        tag = $(genImageTag(lyr));
+                    }
+                    $('#watch').append(tag);
+                    if (tag) {
+                        tag.attr('style', 'z-index:1' + key + '0; width:' + lyr.width + "px; height:" + lyr.height + "px ;position:absolute; top:" +
+                        (((faceHeight / 2) - (parseInt(lyr.height) / 2)) + parseInt(lyr.y)) +
+                        "px; left:" + (((faceWidth / 2) - (parseInt(lyr.width) / 2)) + parseInt(lyr.x)) + "px;");
+                    }
+                });
+            }
+        }
+
+        function packageZip() {
+            var json = editor.getValue();
+
+            // main watch config file
+            if (selectedType == 'watchmaker') {
+                currentWatchFile.file("watch.xml", json2xml(json)); // this doesnt work, need to manually generate xml from json
+            } else if (selectedType == 'facer') {
+                currentWatchFile.file("watchface.json", json);
+            }
+
+            // deal with images
+
+            // deal with fonts
+
+            var content = currentWatchFile.generate({type:"blob"});
+
+            // send file to browser
+            saveAs(content, currentFileName);
+        }
+
+        function genImageTag(image) {
+            // TODO: clean this up
+            var img = new Image();
+            var arrayBuffer = currentWatchFile.file("images/" + image.path).asArrayBuffer();
+            var bytes = new Uint8Array(arrayBuffer);
+            var blob = new Blob([bytes.buffer]);
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(blob);
+            return img;
+        }
+
+        /*
+         function clock() {
+         var hour = document.getElementById("hour"),
+         min = document.getElementById("min"),
+         sec = document.getElementById("sec");
+         //set up a loop
+         (function loop() {
+         requestAnimFrame(loop);
+         draw();
+         })();
+         //position the hands
+         function draw() {
+         var now = new Date(),//now
+         then = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0),//midnight
+         diffInMil = (now.getTime() - then.getTime()),// difference in milliseconds
+         h = (diffInMil / (1000 * 60 * 60)),//hours
+         m = (h * 60),//minutes
+         s = (m * 60);//seconds
+         //rotate the hands accordingly
+         sec.style.webkitTransform = "rotate(" + (s * 6) + "deg)";
+         hour.style.webkitTransform = "rotate(" + (h * 30 + (h / 2)) + "deg)";
+         min.style.webkitTransform = "rotate(" + (m * 6) + "deg)";
+         }
+         }
+         */
+
+        function loadEditor(data) {
+
+            // destroy if it exists
+            if (editor) {
+                editor.destroy();
+            }
+
+            // Initialize the editor
+            editor = new JSONEditor(document.getElementById('editor_holder'), {
+                // Enable fetching schemas via ajax
+                ajax: true,
+
+                // The schema for the editor
+                schema: {
+                    "$ref" : "schemas/" + selectedType + ".json"
+                },
+
+                startval: data,
+
+                // Disable additional properties
+                no_additional_properties: true,
+
+                // Require all properties by default
+                required_by_default: true,
+
+                disable_edit_json: true,
+
+                disable_properties: true,
+
+                theme: "bootstrap3"
+
+            });
+
+            // Hook up the validation indicator to update its
+            // status whenever the editor changes
+            editor.on('change', function () {
+                validate();
+            });
+
+        }
+
+
+        /**
+         * Valid JSON and update watch face
+         */
+        function validate() {
+            var json = editor.getValue();
+            // Get an array of errors from the validator
+            var errors = editor.validate();
+
+            var indicator = $('#valid_indicator');
+
+            // Not valid
+            if (errors.length || json.length == 0) {
+                indicator.removeClass('alert-success');
+                indicator.addClass('alert-danger');
+                indicator.html('<i class="fa fa-times"></i> Configuration is <strong>not valid</strong>');
+            }
+            // Valid
+            else {
+                indicator.removeClass('alert-danger');
+                indicator.addClass('alert-success');
+                indicator.html('<i class="fa fa-check"></i> Configuration is <strong>valid</strong>');
+
+                drawWatch(json, selectedType);
+            }
+        }
+    </script>
+
+</body>
+</html>

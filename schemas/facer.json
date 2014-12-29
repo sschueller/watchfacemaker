@@ -1,0 +1,189 @@
+{
+    "title": "WatchMaker",
+    "type": "object",
+    "id": "mainConfig",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of watch"
+        },
+        "bg_color": {
+            "type": "string",
+            "format": "color",
+            "description": "Background Hex code"
+        },
+        "hotword_bg": {
+            "type": "string",
+            "enum": [
+                "Y",
+                "N"
+            ]
+        },
+        "hotword_loc": {
+            "type": "string",
+            "description": "tc"
+        },
+        "Layer": {
+            "type": "array",
+            "title:": "Layers",
+            "format": "tabs",
+            "items": {
+                "title": "Layer",
+                "headerTemplate": "Layer",
+                "oneOf": [
+                    {
+                        "title": "Image",
+                        "type": "object",
+                        "id": "image",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "low_power": {
+                                "type": "string",
+                                "description": "color"
+                            },
+                            "alignment": {
+                                "type": "string",
+                                "description": "display"
+                            },
+
+
+                            "hash": {
+                                "type": "string",
+                                "description": "gyro"
+                            },
+                            "height": {
+                                "type": "integer",
+                                "description": "height"
+                            },
+                            "opacity": {
+                                "type": "string",
+                                "description": "opacity"
+                            },
+                            "tint_color": {
+                                "type": "string",
+                                "description": "tint_color"
+                            },
+                            "r": {
+                                "type": "string",
+                                "description": "rotation"
+                            },
+                            "type": {
+                                "type": "string",
+                                "description": "type"
+                            },
+                            "width": {
+                                "type": "string",
+                                "description": "width"
+                            },
+                            "x": {
+                                "type": "string",
+                                "description": "x"
+                            },
+                            "y": {
+                                "type": "string",
+                                "description": "y"
+                            },
+                            "is_tinted": {
+                                "type": "string",
+                                "description": "is_tinted"
+                            }
+                        }
+                    },
+                    {
+                        "title": "Image",
+                        "type": "object",
+                        "id": "text",
+                        "properties": {
+                            "text": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "italic": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "bgcolor": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "transform": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "bold": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "color": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "font_family": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "low_power_color": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+
+                            "id": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "low_power": {
+                                "type": "string",
+                                "description": "color"
+                            },
+                            "alignment": {
+                                "type": "string",
+                                "description": "display"
+                            },
+                            "size": {
+                                "type": "integer",
+                                "description": "size"
+                            },
+                            "opacity": {
+                                "type": "string",
+                                "description": "opacity"
+                            },
+                            "tint_color": {
+                                "type": "string",
+                                "description": "tint_color"
+                            },
+                            "r": {
+                                "type": "string",
+                                "description": "rotation"
+                            },
+                            "type": {
+                                "type": "string",
+                                "description": "type"
+                            },
+                            "width": {
+                                "type": "string",
+                                "description": "width"
+                            },
+                            "x": {
+                                "type": "string",
+                                "description": "x"
+                            },
+                            "y": {
+                                "type": "string",
+                                "description": "y"
+                            },
+                            "is_tinted": {
+                                "type": "string",
+                                "description": "is_tinted"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+
+    }
+}
+

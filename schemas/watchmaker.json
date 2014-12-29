@@ -1,0 +1,100 @@
+{
+    "title": "WatchMaker",
+    "type": "object",
+    "id": "mainConfig",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Name of watch"
+        },
+        "bg_color": {
+            "type": "string",
+            "format": "color",
+            "description": "Background Hex code"
+        },
+        "hotword_bg": {
+            "type": "string",
+            "enum": [
+                "Y",
+                "N"
+            ]
+        },
+        "hotword_loc": {
+            "type": "string",
+            "description": "tc"
+        },
+        "Layer": {
+            "type": "array",
+            "title:": "Layers",
+            "format": "tabs",
+            "items": {
+                "title": "Layer",
+                "headerTemplate": "Layer",
+                "oneOf": [
+                    {
+                        "title": "Image",
+                        "type": "object",
+                        "id": "image",
+                        "properties": {
+                            "alignment": {
+                                "type": "string",
+                                "description": "alignment"
+                            },
+                            "color": {
+                                "type": "string",
+                                "format": "color",
+                                "description": "color"
+                            },
+                            "display": {
+                                "type": "string",
+                                "description": "display"
+                            },
+                            "gyro": {
+                                "type": "string",
+                                "description": "gyro"
+                            },
+                            "height": {
+                                "type": "integer",
+                                "description": "height"
+                            },
+                            "opacity": {
+                                "type": "string",
+                                "description": "opacity"
+                            },
+                            "path": {
+                                "title": "Path",
+                                "links": [
+                                    {
+                                        "href": "",
+                                        "mediaType": "image/png"
+                                    }
+                                ]
+                            },
+                            "rotation": {
+                                "type": "string",
+                                "description": "rotation"
+                            },
+                            "type": {
+                                "type": "string",
+                                "description": "type"
+                            },
+                            "width": {
+                                "type": "string",
+                                "description": "width"
+                            },
+                            "x": {
+                                "type": "string",
+                                "description": "x"
+                            },
+                            "y": {
+                                "type": "string",
+                                "description": "y"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+
+    }
+}
