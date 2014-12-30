@@ -23,3 +23,7 @@ http://ne70.com/
 * Create watchface from scratch
 * Convert between facer and watchmaker
 * Direct upload to facerepo?
+ 
+
+## License
+GNU GENERAL PUBLIC LICENSE Version 2, June 1991
