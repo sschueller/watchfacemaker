@@ -15,6 +15,7 @@
 
     <script src="js/json2xml.js"></script>
     <script src="js/FileSaver.min.js"></script>
+    <script src="js/XMLWriter-1.0.0-min.js"></script>
 
     <link rel="stylesheet" href="css/bootstrap.css"/>
     <link rel="stylesheet" href="css/font-awesome.min.css"/>
@@ -100,11 +101,11 @@
                         // draw empty face, error?
                     }
 
-                    // load editor
-                    //loadEditor(json);
-
                     // draw watch face
                     drawWatch(json, selectedType);
+
+                    // load editor
+                    loadEditor(json);
 
                 },
                 error: function (e, file) { /* Native ProgressEvent */
@@ -181,7 +182,7 @@
 
             // main watch config file
             if (selectedType == 'watchmaker') {
-                currentWatchFile.file("watch.xml", json2xml(json)); // this doesnt work, need to manually generate xml from json
+                currentWatchFile.file("watch.xml", createToWatchmakerXML(json));
             } else if (selectedType == 'facer') {
                 currentWatchFile.file("watchface.json", json);
             }
@@ -193,7 +194,41 @@
             var content = currentWatchFile.generate({type:"blob"});
 
             // send file to browser
-            saveAs(content, currentFileName);
+            //saveAs(content, currentFileName);
+        }
+
+
+
+
+        function createToWatchmakerXML(json) {
+
+            var watchXML = new  XMLWriter('UTF-8', '1.0');
+            watchXML.writeStartDocument(true);
+
+            watchXML.writeStartElement('Watch');
+            watchXML.writeAttributeString('name',json.name);
+            watchXML.writeAttributeString('bg_color',json.bg_color);
+            watchXML.writeAttributeString('ind_bg',json.ind_bg);
+            watchXML.writeAttributeString('ind_loc',json.ind_loc);
+            watchXML.writeAttributeString('hotword_loc',json.hotword_loc);
+            watchXML.writeAttributeString('hotword_bg',json.hotword_bg);
+
+            $.each(json.Layer, function(key, layer) {
+                watchXML.writeStartElement('Layer');
+                for (var property in layer ) {
+                    watchXML.writeAttributeString(property, layer[property]);
+                }
+                watchXML.writeEndElement();
+            });
+
+            watchXML.writeEndElement();
+
+            watchXML.writeEndDocument();
+
+            // TODO: header needs to be removed, deal with html entities
+            console.log(watchXML.flush());
+
+            return watchXML.flush();
         }
 
         function genImageTag(image) {
@@ -250,7 +285,7 @@
 
                 // The schema for the editor
                 schema: {
-                    "$ref" : "schemas/" + selectedType + ".json"
+                    "$ref": "schemas/" + selectedType + ".json"
                 },
 
                 startval: data,
