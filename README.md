@@ -18,5 +18,8 @@ http://ne70.com/
 * Correct packaging of files for download, create dirs and add images
 * Function interp. for hands etc. (display current time on face and show animations)
 * Deal with facer's multiple JSON files
+* Add new elements
+* Drag and drop of elements
+* Create watchface from scratch
 * Convert between facer and watchmaker
 * Direct upload to facerepo?
