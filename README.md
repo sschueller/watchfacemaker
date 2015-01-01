@@ -20,3 +20,6 @@ http://ne70.com/
 * Deal with facer's multiple JSON files
 * Convert between facer and watchmaker
 * Direct upload to facerepo?
+
+## License 
+MIT
